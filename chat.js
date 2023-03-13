@@ -2,7 +2,7 @@ import co from "co";
 import prompt from "co-prompt";
 import { Configuration, OpenAIApi } from "openai";
 const configuration = new Configuration({
-    organization: "org-abWYw229QMdB3cWwXoKPwBJ6",
+    organization: process.env.OPENAI_Organization_ID,
     apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
