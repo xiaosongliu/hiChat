@@ -5,10 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "what": "node init.js"
-  },
-  "bin": {
-    "what": "bin/what.js"
+    "chat": "node chat.js"
   },
   "keywords": [
     "OpenAI"
