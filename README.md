@@ -15,9 +15,30 @@
 ## 安装
 > 本代码依赖 Nodejs 环境，直接访问 <https://nodejs.org/zh-cn/> 安装即可。
 
-1. git clone https://github.com/xiaosongliu/hiChat.git
-2. cd hiChat
-3. npm install
-4. node chat
+1. 克隆代码到本地
+```javascript
+git clone https://github.com/xiaosongliu/hiChat.git
+```
+2. 进入代码目录
+```javascript
+cd hiChat
+```
+3. 安装依赖包
+```javascript
+npm install
+```
 
+> 完成上面步骤即已安装完成。
+
+## 开始聊天
+
+1. 运行聊天程序
+```javascript
+node chat
+```
 > 完成上面步骤即已启动聊天窗口，可以打字聊天啦！
+
+2. 退出聊天
+```javascript
+我: exit
+```
