@@ -7,7 +7,7 @@
 - openai-node Github：<https://github.com/openai/openai-node>
 
 ## 配置环境变量
-> 将申请的 OPENAI_API_KEY 与 Organization ID 配置到电脑的环境变量中，以下为变更名：
+> 将申请的 OPENAI_API_KEY 与 Organization ID 配置到电脑的环境变量中，以下为变量名：
 
 1. OPENAI_API_KEY
 2. OPENAI_Organization_ID
