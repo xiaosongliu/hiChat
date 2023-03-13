@@ -1,0 +1,24 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "A demo for OpenAI test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "what": "node init.js"
+  },
+  "bin": {
+    "what": "bin/what.js"
+  },
+  "keywords": [
+    "OpenAI"
+  ],
+  "author": "xiaosongliu",
+  "license": "ISC",
+  "dependencies": {
+    "co": "^4.6.0",
+    "co-prompt": "^1.0.0",
+    "openai": "^3.2.1"
+  },
+  "type": "module"
+}
