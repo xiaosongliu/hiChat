@@ -68,14 +68,12 @@ const doChat = async () => {
 }
 
 function *run() {
-    let exit = false;
     do {
         let msg = yield prompt(`我: `);
         if (!msg) {
             continue;
         }
         if (msg.toLowerCase() == 'exit') {
-            exit = true;
             process.exit();
         }
         process.stdout.write("\n");
@@ -98,7 +96,7 @@ function *run() {
         }
         process.stdout.write("\n\n");
         
-    } while (!exit);
+    } while (true);
 }
 
 co(run);
