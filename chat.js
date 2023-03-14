@@ -1,6 +1,23 @@
 import co from "co";
+import * as fs from "node:fs/promises";
 import prompt from "co-prompt";
 import { Configuration, OpenAIApi } from "openai";
+
+Date.prototype.Format = function (fmt) {
+    var o = {
+        "M+": this.getMonth() + 1,
+        "d+": this.getDate(),
+        "h+": this.getHours(),
+        "m+": this.getMinutes(),
+        "s+": this.getSeconds(),
+        "q+": Math.floor((this.getMonth() + 3) / 3),
+        "S": this.getMilliseconds()
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+  }
 
 const configuration = new Configuration({
     organization: process.env.OPENAI_Organization_ID,
@@ -69,10 +86,48 @@ const doChat = async () => {
     }
 }
 
+const saveMsg = async () => {
+    let msg = [];
+    let dir = './msg/';
+    chatMessages.forEach((item, i) => {
+        let name = '';
+        let content = item.content.trim();
+        switch (item.role) {
+            case 'user':
+                name = '我';
+                break;
+            case 'assistant':
+                name = 'ChatGPT';
+                break;
+            case 'system':
+                name = '系统';
+                break;
+        }
+        msg.push(`${name}: ${content}`);
+    });
+    try {
+        await fs.access(dir);
+    } catch {
+        await fs.mkdir(dir);
+    }
+    try {
+        let file = (new Date()).Format('yyyyMMdd');
+        await fs.appendFile(`${dir}${file}.txt`, msg.join("\n") + "\n\n");
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 function *run() {
     do {
         let msg = yield prompt(`我: `);
         if (!msg) {
+            continue;
+        }
+        if (msg.toLowerCase() == 'save') {
+            let res = yield saveMsg();
+            process.stdout.write("聊天内容保存" + (res ? '成功' : '失败') + "\n");
             continue;
         }
         if (msg.toLowerCase() == 'exit') {

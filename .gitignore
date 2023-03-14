@@ -2,6 +2,7 @@
 node_modules
 /dist
 /bin
+/msg
 package-lock.json
 
 # local env files
