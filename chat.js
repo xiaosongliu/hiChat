@@ -111,7 +111,7 @@ const saveMsg = async () => {
         await fs.mkdir(dir);
     }
     try {
-        let file = (new Date()).Format('yyyyMMdd');
+        let file = (new Date()).Format('yyyyMMddhhmmss');
         await fs.appendFile(`${dir}${file}.txt`, msg.join("\n") + "\n\n");
         return true;
     } catch {
