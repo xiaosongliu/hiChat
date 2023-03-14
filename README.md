@@ -47,4 +47,4 @@ node chat
 ```javascript
 我: save
 ```
-> 在当前目录下创建 msg 目录，将内容以日期为文件名保存为 txt 文件，如： ./msg/20230314.txt
+> 在当前目录下创建 msg 目录，将内容以日期为文件名保存为 txt 文件，如： msg/20230314.txt
