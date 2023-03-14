@@ -131,6 +131,7 @@ function *run() {
             continue;
         }
         if (msg.toLowerCase() == 'exit') {
+            yield saveMsg();
             process.exit();
         }
         process.stdout.write("\n");
