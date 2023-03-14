@@ -1,12 +1,14 @@
 import co from "co";
 import prompt from "co-prompt";
 import { Configuration, OpenAIApi } from "openai";
+
 const configuration = new Configuration({
     organization: process.env.OPENAI_Organization_ID,
     apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
 const chatMessages = [];
+
 const doMsg = (res) => {
     return new Promise((resolve, reject) => {
         const item = { role: 'assistant', content: '' };
@@ -15,7 +17,6 @@ const doMsg = (res) => {
             const lines = data.toString().split('\n').filter(line => line.trim() !== '');
             for (const line of lines) {
                 const message = line.replace(/^data: /, '');
-                // Stream finished
                 if (message === '[DONE]') {
                     resolve(item);
                     return;
@@ -40,6 +41,7 @@ const doMsg = (res) => {
         });
     });
 }
+
 const doChat = async () => {
     try {
         const res = await openai.createChatCompletion({
