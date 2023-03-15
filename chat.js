@@ -1,23 +1,8 @@
 import co from "co";
-import * as fs from "node:fs/promises";
 import prompt from "co-prompt";
+import * as fs from "node:fs/promises";
+import moment from 'moment';
 import { Configuration, OpenAIApi } from "openai";
-
-Date.prototype.Format = function (fmt) {
-    var o = {
-        "M+": this.getMonth() + 1,
-        "d+": this.getDate(),
-        "h+": this.getHours(),
-        "m+": this.getMinutes(),
-        "s+": this.getSeconds(),
-        "q+": Math.floor((this.getMonth() + 3) / 3),
-        "S": this.getMilliseconds()
-    };
-    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
-    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-  }
 
 const configuration = new Configuration({
     organization: process.env.OPENAI_Organization_ID,
@@ -89,6 +74,9 @@ const doChat = async () => {
 const saveMsg = async () => {
     let msg = [];
     let dir = './msg/';
+    if (!chatMessages.length) {
+        return false;
+    }
     chatMessages.forEach((item, i) => {
         let name = '';
         let content = item.content.trim();
@@ -111,7 +99,7 @@ const saveMsg = async () => {
         await fs.mkdir(dir);
     }
     try {
-        let file = (new Date()).Format('yyyyMMddhhmmss');
+        let file = moment().format('YYYYMMDDHHmmss');
         await fs.appendFile(`${dir}${file}.txt`, msg.join("\n") + "\n\n");
         return true;
     } catch {
@@ -121,7 +109,8 @@ const saveMsg = async () => {
 
 function *run() {
     do {
-        let msg = yield prompt(`我: `);
+        let msg = yield prompt.multiline(`我: `);
+        msg.trim();
         if (!msg) {
             continue;
         }
