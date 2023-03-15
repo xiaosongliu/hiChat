@@ -107,12 +107,31 @@ const saveMsg = async () => {
     }
 }
 
+const readDoc = async () => {
+    const doc = './doc.txt';
+    try {
+        await fs.access(doc);
+    } catch {
+        return false;
+    }
+    try {
+        let msg = await fs.readFile(doc, 'utf-8');
+        return msg;
+    } catch {
+        return false;
+    }
+};
+
 function *run() {
     do {
-        let msg = yield prompt.multiline(`我: `);
+        let msg = yield prompt(`我: `);
         msg.trim();
         if (!msg) {
             continue;
+        }
+        if (msg.toLowerCase() == 'doc') {
+            msg = yield readDoc();
+            process.stdout.write(msg + "\n");
         }
         if (msg.toLowerCase() == 'save') {
             let res = yield saveMsg();
