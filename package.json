@@ -17,6 +17,5 @@
     "co-prompt": "^1.0.0",
     "moment": "^2.29.4",
     "openai": "^3.2.1"
-  },
-  "type": "module"
+  }
 }

@@ -1,8 +1,8 @@
-import co from "co";
-import prompt from "co-prompt";
-import * as fs from "node:fs/promises";
-import moment from 'moment';
-import { Configuration, OpenAIApi } from "openai";
+const co = require('co');
+const fs = require('fs/promises');
+const prompt = require('co-prompt');
+const moment = require('moment');
+const { Configuration, OpenAIApi } = require("openai");
 
 const configuration = new Configuration({
     organization: process.env.OPENAI_Organization_ID,
@@ -11,47 +11,14 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 const chatMessages = [];
 
-const doMsg = (res) => {
-    return new Promise((resolve, reject) => {
-        const item = { role: 'assistant', content: '' };
-        process.stdout.write('ChatGPT: ');
-        res.data.on('data', data => {
-            const lines = data.toString().split('\n').filter(line => line.trim() !== '');
-            for (const line of lines) {
-                const message = line.replace(/^data: /, '');
-                if (message === '[DONE]') {
-                    resolve(item);
-                    return;
-                }
-                try {
-                    const parsed = JSON.parse(message);
-                    if (parsed.choices[0].delta) {
-                        const delta = parsed.choices[0].delta;
-                        if (delta.role) {
-                            item.role = delta.role;
-                        }
-                        if (delta.content) {
-                            item.content += delta.content;
-                            process.stdout.write(delta.content);
-                        }
-                    }
-                } catch(error) {
-                    console.error('Could not JSON parse stream message', message, error);
-                    reject(error);
-                }
-            }
-        });
-    });
-}
-
-const doChat = async () => {
+const postMsg = async () => {
     try {
         const res = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: chatMessages,
             stream: true,
         }, { responseType: 'stream' });
-        return await doMsg(res);
+        return await receiveMsg(res);
     } catch (error) {
         if (error.response?.status) {
             console.error(error.response.status, error.message);
@@ -68,6 +35,52 @@ const doChat = async () => {
             console.error('An error occurred during OpenAI request', error);
         }
         return false;
+    }
+}
+
+const receiveMsg = (res) => {
+    return new Promise((resolve, reject) => {
+        const item = {
+            role: 'assistant',
+            content: ''
+        };
+        res.data.on('data', data => {
+            const lines = data.toString().split('\n').filter(line => line.trim() !== '');
+            for (const line of lines) {
+                const message = line.replace(/^data: /, '');
+                if (message === '[DONE]') {
+                    resolve(item);
+                    return;
+                }
+                try {
+                    const parsed = JSON.parse(message);
+                    if (parsed.choices[0].delta) {
+                        const delta = parsed.choices[0].delta;
+                        if (delta.role) {
+                            item.role = delta.role;
+                        }
+                        if (delta.content) {
+                            if (!item.content) {
+                                process.stdout.write('ChatGPT: ');
+                            }
+                            process.stdout.write(delta.content);
+                            item.content += delta.content;
+                        }
+                    }
+                } catch(error) {
+                    console.error('Could not JSON parse stream message', message, error);
+                    reject(error);
+                }
+            }
+        });
+    });
+}
+
+const createDirectoryIfNotExists = async (dirname) => {
+    try {
+        await fs.access(dirname);
+    } catch (error) {
+        await fs.mkdir(dirname, { recursive: true });
     }
 }
 
@@ -94,13 +107,10 @@ const saveMsg = async () => {
         msg.push(`${name}: ${content}`);
     });
     try {
-        await fs.access(dir);
-    } catch {
-        await fs.mkdir(dir);
-    }
-    try {
-        let file = moment().format('YYYYMMDDHHmmss');
-        await fs.appendFile(`${dir}${file}.txt`, msg.join("\n") + "\n\n");
+        let name = moment().format('YYYYMMDDHHmmss');
+        let file = `${dir}${name}.txt`;
+        await createDirectoryIfNotExists(dir);
+        await fs.appendFile(file, msg.join("\n") + "\n\n");
         return true;
     } catch {
         return false;
@@ -147,7 +157,7 @@ function *run() {
             "role": 'user',
             "content": msg
         });
-        let res = yield doChat();
+        let res = yield postMsg();
         switch (res.role) {
             case 'assistant':
                 if (res.content != '') {
