@@ -158,17 +158,8 @@ function *run() {
             "content": msg
         });
         let res = yield postMsg();
-        switch (res.role) {
-            case 'assistant':
-                if (res.content != '') {
-                    chatMessages.push(res);
-                } else {
-                    process.exit();
-                }
-                break;
-            case 'system':
-                break;
-
+        if (res.content != '') {
+            chatMessages.push(res);
         }
         process.stdout.write("\n\n");
         
